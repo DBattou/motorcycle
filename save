@@ -20,6 +20,10 @@ var noise = (x) => {
   return lerp(perm[Math.floor(x)], perm[Math.ceil(x)], x - Math.floor(x))
 }
 
+function calcAngleDegrees(x, y) {
+  return (Math.atan2(y, x) * 180) / Math.PI
+}
+
 var player = new (function () {
   this.x = canvas.width / 2
   this.y = 0
@@ -31,7 +35,7 @@ var player = new (function () {
   this.img.src = 'moto.png'
   this.draw = function () {
     var p1 = canvas.height - noise(t + this.x) * 0.25
-    var p2 = canvas.height - noise(t + 15 + this.x) * 0.25
+    var p2 = canvas.height - noise(t + 5 + this.x) * 0.25
 
     var grounded = 0
     if (this.y < p1) {
@@ -39,52 +43,45 @@ var player = new (function () {
     } else {
       this.ySpeed -= this.y - p1
       this.y = p1
-
       grounded = 1
     }
 
-    if (!playing || (grounded && Math.abs(this.rot) > Math.PI * 0.5)) {
-      playing = false
-      this.rSpeed = 5
-      k.ArrowUp = 1
-      this.x -= speed * 2.5
-    }
-    // var angle = Math.atan2(p2 - 31 - this.y, this.x + 15 - this.x)
-    // var angle = calcAngleDegrees(p2 - p1, 15)
+    // var angle = Math.atan2(p2 - 31 - this.y, this.x + 5 - this.x)
+    var angle = calcAngleDegrees(p2 - p1, 5)
+    console.log(angle, 'degré')
 
-    var angle = Math.atan2(p2 - p1, 15)
-    this.y += this.ySpeed
-
-    if (grounded && playing) {
-      this.rot -= (this.rot - angle) * 0.5
-      this.rSpeed = this.rSpeed - (angle - this.rot)
+    // this.y += this.ySpeed
+    // console.log(angle)
+    if (grounded) {
+      this.rot = angle
+      // this.rSpeed = this.rSpeed - (angle - this.rot)
     }
 
-    this.rSpeed += (k.ArrowLeft - k.ArrowRight) * 0.05
-    this.rot -= this.rSpeed * 0.1
-
-    if (this.rot > Math.PI) this.rot = -Math.PI
-    if (this.rot < -Math.PI) this.rot = Math.PI
+    // this.rot -= this.rSpeed * 0.1
 
     context.save()
     context.translate(this.x, this.y)
-    context.rotate(this.rot)
+    // context.rotate(this.rot)
     context.drawImage(this.img, -15, -46, 50, 50)
     context.restore()
   }
 })()
 
+// var can = document.getElementById('canvas1');
+// var ctx = can.getContext('2d');
+
+// ctx.fillRect(50,50,50,50); // something in the background
+
+// var img = new Image();
+// img.onload = function() {
+//     ctx.drawImage(img, 0, 0);
+// }
+//   img.src = "http://upload.wikimedia.org/wikipedia/commons/thumb/4/47/PNG_transparency_demonstration_1.png/280px-PNG_transparency_demonstration_1.png"; //transparent png
+
 // Draw on canvas
 var t = 0
-var speed = 0
-var k = { ArrowUp: 0, ArrowDown: 0, ArrowLeft: 0, ArrowRight: 0 }
-var playing = true
 function draw() {
-  speed -= (speed - (k.ArrowUp - k.ArrowDown)) * 0.01
-
-  // console.log({ t })
-  t += 10 * speed
-
+  t = t
   context.fillStyle = 'green'
   context.fillRect(0, 0, canvas.width, canvas.height)
 
@@ -102,9 +99,6 @@ function draw() {
   player.draw()
   requestAnimationFrame(draw)
 }
-
-onkeydown = (d) => (k[d.key] = 1)
-onkeyup = (d) => (k[d.key] = 0)
 
 draw()
 // function draw() {
