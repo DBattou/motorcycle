@@ -10,3 +10,5 @@ View live demo ==> https://cocky-perlman-8e935d.netlify.app/ ✅
 4. Remove scroll
 5. Dont accelerate in the air
 6. Put the gravity center at the center of the image
+7. Add controls legend
+8. Add touch control for mobile
